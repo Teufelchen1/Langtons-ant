@@ -1,0 +1,129 @@
+<html>
+	<style type="text/css" >
+    	canvas { border: 1px solid black; }
+		table { border: 1px solid black; } 
+	</style>
+	<canvas id="universe" width="700" height="500"></canvas>
+	<script>
+		var canvas = document.getElementById('universe');
+		var ctx = canvas.getContext('2d');
+		ctx.canvas.width = screen.width-15;
+		ctx.canvas.height = screen.height-200;
+		var space = [];
+		var size = 5;
+		var count = 0;
+		var ant = new anttype;
+		for (var i = 0; i+size < ctx.canvas.width; i += size+2) {
+			space.push([])
+			for (var p = 0; p+size < ctx.canvas.height; p += size+2) {
+				space[space.length-1].push(new field);
+			}
+		}
+
+		var width = space.length-1;
+		var height = space[0].length-1;
+
+		function anttype(){
+			this.dir = "DOWN";
+			this.x = 80;
+			this.y = 40;
+			this.posx = 5+this.x*(size+2);
+			this.posy = 5+this.y*(size+2);
+			this.cal = function() {
+				this.posx = 5+this.x*(size+2);
+				this.posy = 5+this.y*(size+2);
+			}
+		}
+
+		function field(){
+			this.step = 0;
+			this.alive = 0;
+		}
+
+		function init(){
+		}
+
+		function draw(){
+			var x = 5;
+			var y = 5;
+			for (var i = 0; i < space.length; i++){
+				for (var p = 0; p < space[i].length; p++){
+					if(space[i][p].step == 1){
+						ctx.fillStyle = "#555555";
+						ctx.fillRect(x,y,size,size);
+					} else{
+						ctx.fillStyle = "#CCCCCC";
+						ctx.fillRect(x,y,size,size);
+					}
+					y += size+2;
+				}
+				y = 5;
+				x += size+2;
+			}
+			ctx.fillStyle = "#DD3333";
+			ant.cal();
+			ctx.fillRect(ant.posx,ant.posy,size,size);
+			ctx.stroke();
+		}
+
+		function update(){
+			count += 1;
+			draw();
+			console.log("I'm: "+ant.dir+" x: "+ant.x+" y: "+ant.y);
+			if (space[ant.x][ant.y].step == 0){
+				console.log("Didn't see something");
+				space[ant.x][ant.y].step = 1;
+				switch(ant.dir){
+					case "UP":
+						ant.x += 1;
+						ant.dir = "RIGHT";
+						break;
+					case "RIGHT":
+						ant.y += 1;
+						ant.dir = "DOWN";
+						break;
+					case "DOWN":
+						ant.x -= 1;
+						ant.dir = "LEFT";
+						break;
+					case "LEFT":
+						ant.y -= 1;
+						ant.dir = "UP";
+						break;
+				}
+			} else {
+				console.log("See something!");
+				space[ant.x][ant.y].step = 0;
+				switch(ant.dir){
+					case "UP":
+						ant.x -= 1;
+						ant.dir = "LEFT";
+						break;
+					case "LEFT":
+						ant.y += 1;
+						ant.dir = "DOWN";
+						break;
+					case "DOWN":
+						ant.x += 1;
+						ant.dir = "RIGHT";
+						break;
+					case "RIGHT":
+						ant.y -= 1;
+						ant.dir = "UP";
+						break;
+				}
+			}
+			console.log("Now: "+ant.dir);
+			document.getElementById("counter").innerHTML = count;
+		}
+
+		function run(){
+			init();
+			var loop = setInterval("update()",20);
+		}
+	</script>
+
+	<br>
+	<button onclick="run()">Run</button>
+	<div id="counter"></div>
+</html>
